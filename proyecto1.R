@@ -1,78 +1,105 @@
 library(haven)
+library(ggplot2)
+library(dplyr)
+library(nortest)
 
 setwd("C:/Users/Zephyrus/Documents/U/7mo Semestre/Mineria de Datos/Proyecto1-Mineria-de-Datos")
 
+#Procecamiento de datos para los datos de Nacimientos
 nac2009 = read_sav("./BasesDeDatos/nacimientos2009.sav")
 names(nac2009)[names(nac2009) == "Gretnm"] <- "grupetma"
+nac2009$Escolam<-9
+nac2009$Escolap<-9
 nac2009$Areag<-NULL
 nac2009$Añoocu<-NULL
 nac2009$Naciop<-NULL
 nac2009$Naciom<-NULL
+nac2009$Ocupam<-NULL
+nac2009$Ocupap<-NULL
+nac2009$grupetma[nac2009$grupetma %in% 1] <- 6
+nac2009$grupetma[nac2009$grupetma %in% 2] <- 7
 
 nac2010 = read_sav("./BasesDeDatos/nacimientos2010.sav")
 names(nac2010)[names(nac2010) == "mupnam"] <- "Mupnam"
 names(nac2010)[names(nac2010) == "mupnap"] <- "Mupnap"
 names(nac2010)[names(nac2010) == "muprem"] <- "Muprem"
-nac2010$Escolam<-NULL
-nac2010$Escolap<-NULL
 nac2010$Areag<-NULL
 nac2010$Añoocu<-NULL
 nac2010$Naciop<-NULL
 nac2010$Naciom<-NULL
+nac2010$Ocupam<-NULL
+nac2010$Ocupap<-NULL
+nac2010$Gretnp[nac2010$Gretnp %in% 1] <- 6
+nac2010$Gretnp[nac2010$Gretnp %in% 2] <- 7
+nac2010$grupetma[nac2010$grupetma %in% 1] <- 6
+nac2010$grupetma[nac2010$grupetma %in% 2] <- 7
+nac2010$Escolam <- ifelse(nac2010$Escolam !=9,nac2010$Escolam+1,nac2010$Escolam )
+nac2010$Escolap <- ifelse(nac2010$Escolap !=9,nac2010$Escolap+1,nac2010$Escolap )
 
 nac2011 = read_sav("./BasesDeDatos/nacimientos2011.sav")
 names(nac2011)[names(nac2011) == "Mupreg"] <- "mupreg"
 names(nac2011)[names(nac2011) == "Muprep"] <- "muprep"
-nac2011$Escolam<-NULL
-nac2011$Escolap<-NULL
+names(nac2011)[names(nac2011) == "munnam"] <- "Mupnam"
 nac2011$Areag<-NULL
 nac2011$Añoocu<-NULL
 nac2011$Naciop<-NULL
 nac2011$Naciom<-NULL
+nac2011$Ocupam<-NULL
+nac2011$Ocupap<-NULL
+nac2011$Gretnp[nac2011$Gretnp %in% 1] <- 6
+nac2011$Gretnp[nac2011$Gretnp %in% 2] <- 7
+nac2011$grupetma[nac2011$grupetma %in% 1] <- 6
+nac2011$grupetma[nac2011$grupetma %in% 2] <- 7
+nac2011$Escolam <- ifelse(nac2011$Escolam !=9,nac2011$Escolam+1,nac2011$Escolam )
+nac2011$Escolap <- ifelse(nac2011$Escolap !=9,nac2011$Escolap+1,nac2011$Escolap )
 
 nac2012 = read_sav("./BasesDeDatos/nacimientos2012.sav")
 names(nac2012)[names(nac2012) == "Mupreg"] <- "mupreg"
 names(nac2012)[names(nac2012) == "Muprep"] <- "muprep"
 names(nac2012)[names(nac2012) == "munnam"] <- "Mupnam"
-nac2012$Escolam<-NULL
-nac2012$Escolap<-NULL
 nac2012$Paisrep<-NULL
 nac2012$Paisnacp<-NULL
 nac2012$Paisrem<-NULL
 nac2012$Paisnacm<-NULL
 nac2012$Naciop<-NULL
 nac2012$Naciom<-NULL
+nac2012$Ocupam<-NULL
+nac2012$Ocupap<-NULL
+nac2012$Gretnp[nac2012$Gretnp %in% 1] <- 6
+nac2012$Gretnp[nac2012$Gretnp %in% 2] <- 7
+nac2012$grupetma[nac2012$grupetma %in% 1] <- 6
+nac2012$grupetma[nac2012$grupetma %in% 2] <- 7
+nac2012$Escolam <- ifelse(nac2012$Escolam !=9,nac2012$Escolam+1,nac2012$Escolam )
+nac2012$Escolap <- ifelse(nac2012$Escolap !=9,nac2012$Escolap+1,nac2012$Escolap )
 
 nac2013 = read_sav("./BasesDeDatos/nacimientos2013.sav")
 names(nac2013)[names(nac2013) == "Mupreg"] <- "mupreg"
 names(nac2013)[names(nac2013) == "Muprep"] <- "muprep"
 names(nac2013)[names(nac2013) == "PuebloPP"] <- "Gretnp"
-names(nac2013)[names(nac2013) == "Ciuopad"] <- "Ocupap"
 names(nac2013)[names(nac2013) == "PuebloPM"] <- "grupetma"
-names(nac2013)[names(nac2013) == "Ciuomad"] <- "Ocupam"
 nac2013$Paisrep<-NULL
 nac2013$Paisnacp<-NULL
-nac2013$Escolap<-NULL
 nac2013$Paisrem<-NULL
 nac2013$Paisnacm<-NULL
-nac2013$Escolam<-NULL
 nac2013$Naciop<-NULL
 nac2013$Naciom<-NULL
+nac2013$Ciuomad<-NULL
+nac2013$Ciuopad<-NULL
 
 nac2014 = read_sav("./BasesDeDatos/nacimientos2014.sav")
 names(nac2014)[names(nac2014) == "Mupreg"] <- "mupreg"
 names(nac2014)[names(nac2014) == "Muprep"] <- "muprep"
 names(nac2014)[names(nac2014) == "PuebloPP"] <- "Gretnp"
-names(nac2014)[names(nac2014) == "ciuopad"] <- "Ocupap"
 names(nac2014)[names(nac2014) == "PuebloPM"] <- "grupetma"
-names(nac2014)[names(nac2014) == "ciuomad"] <- "Ocupam"
 names(nac2014)[names(nac2014) == "Munpnap"] <- "Mupnap"
 nac2014$Paisrep<-NULL
 nac2014$Paisnacp<-NULL
 nac2014$Paisrem<-NULL
 nac2014$Paisnacm<-NULL
-nac2014$Escolam<-NULL
-nac2014$Escolap<-NULL
+nac2014$Ocupap<-NULL
+nac2014$ciuomad<-NULL
+nac2014$Escolam <- ifelse(nac2014$Escolam !=9,nac2014$Escolam+1,nac2014$Escolam )
+nac2014$Escolap <- ifelse(nac2014$Escolap !=9,nac2014$Escolap+1,nac2014$Escolap )
 
 nac2015 = read_sav("./BasesDeDatos/nacimientos2015.sav")
 names(nac2015)[names(nac2015) == "Mupreg"] <- "mupreg"
@@ -86,9 +113,9 @@ nac2015$Paisrep<-NULL
 nac2015$Paisnacp<-NULL
 nac2015$Paisrem<-NULL
 nac2015$Paisnacm<-NULL
-nac2015$Escolam<-NULL
-nac2015$Escolap<-NULL
 nac2015$ViaPar<-NULL
+nac2015$Ocupap<-NULL
+nac2015$Ocupam<-NULL
 
 nac2016 = read_sav("./BasesDeDatos/nacimientos2016.sav")
 names(nac2016)[names(nac2016) == "Mupreg"] <- "mupreg"
@@ -102,9 +129,11 @@ nac2016$Paisrep<-NULL
 nac2016$Paisnacp<-NULL
 nac2016$Paisrem<-NULL
 nac2016$Paisnacm<-NULL
-nac2016$Escolam<-NULL
-nac2016$Escolap<-NULL
 nac2016$ViaPar<-NULL
+nac2016$Ocupap<-NULL
+nac2016$Ocupam<-NULL
+nac2016$Escolam <- ifelse(nac2016$Escolam !=9,nac2016$Escolam+1,nac2016$Escolam )
+nac2016$Escolap <- ifelse(nac2016$Escolap !=9,nac2016$Escolap+1,nac2016$Escolap )
 
 nac2017 = read_sav("./BasesDeDatos/nacimientos2017.sav")
 names(nac2017)[names(nac2017) == "Mupreg"] <- "mupreg"
@@ -118,9 +147,9 @@ nac2017$Paisrep<-NULL
 nac2017$Paisnacp<-NULL
 nac2017$Paisrem<-NULL
 nac2017$Paisnacm<-NULL
-nac2017$Escolam<-NULL
-nac2017$Escolap<-NULL
 nac2017$ViaPar<-NULL
+nac2017$Ocupap<-NULL
+nac2017$Ocupam<-NULL
 
 nac2018 = read_sav("./BasesDeDatos/nacimientos2018.sav")
 names(nac2018)[names(nac2018) == "Mupreg"] <- "mupreg"
@@ -134,9 +163,9 @@ nac2018$Paisrep<-NULL
 nac2018$Paisnacp<-NULL
 nac2018$Paisrem<-NULL
 nac2018$Paisnacm<-NULL
-nac2018$Escolam<-NULL
-nac2018$Escolap<-NULL
 nac2018$ViaPar<-NULL
+nac2018$Ocupap<-NULL
+nac2018$Ocupam<-NULL
 
 nac2019 = read_sav("./BasesDeDatos/nacimientos2019.sav")
 names(nac2019)[names(nac2019) == "Mupreg"] <- "mupreg"
@@ -150,9 +179,9 @@ nac2019$Paisrep<-NULL
 nac2019$Paisnacp<-NULL
 nac2019$Paisrem<-NULL
 nac2019$Paisnacm<-NULL
-nac2019$Escolam<-NULL
-nac2019$Escolap<-NULL
 nac2019$ViaPar<-NULL
+nac2019$Ocupap<-NULL
+nac2019$Ocupam<-NULL
 
 
 nac2009<-zap_labels(nac2009)
@@ -170,49 +199,90 @@ nac2019<-zap_labels(nac2019)
 
 nacimientos <- rbind(nac2009, nac2010, nac2011, nac2012, nac2013, nac2014, nac2015, nac2016, nac2017, nac2018, nac2019)
 nrow(nacimientos)
-
+ncol(nacimientos)
+colnames(nacimientos)
 
 nacimientos$Añoreg[nacimientos$Añoreg %in% "9"] <- "2009"
 nacimientos$Añoreg[nacimientos$Añoreg %in% "10"] <- "2010"
-nacimientos$Libras[nacimientos$Libras %in% "99"] <- "NA"
-nacimientos$Onzas[nacimientos$Onzas %in% "99"] <- "NA"
-nacimientos$Sexo[nacimientos$Sexo %in% "1"] <- "Hombre"
-nacimientos$Sexo[nacimientos$Sexo %in% "2"] <- "Mujer"
-nacimientos$Tipar[nacimientos$Tipar %in% "1"] <- "Simple"
-nacimientos$Tipar[nacimientos$Tipar %in% "2"] <- "Doble"
-nacimientos$Tipar[nacimientos$Tipar %in% "3"] <- "Triple"
-nacimientos$Tipar[nacimientos$Tipar %in% "4"] <- "Multiple"
 
-nacimientos$Edadp[nacimientos$Edadp %in% "999"] <- "Ignorado"
-nacimientos$Deprep[nacimientos$Deprep %in% "99"] <- "Ignorado"
-nacimientos$Deprep[nacimientos$Deprep %in% "23"] <- "Extranjero"
-nacimientos$muprep[nacimientos$muprep %in% "9999"] <- "Ignorado"
-nacimientos$muprep[nacimientos$muprep %in% "2300"] <- "Extranjero"
-nacimientos$Gretnp[nacimientos$Gretnp %in% "9"] <- "Ignorado"
-nacimientos$Escivp[nacimientos$Escivp %in% "9"] <- "Ignorado"
-nacimientos$Escivp[nacimientos$Escivp %in% "1"] <- "Soltero"
-nacimientos$Escivp[nacimientos$Escivp %in% "2"] <- "Casado"
-nacimientos$Escivp[nacimientos$Escivp %in% "3"] <- "Unido"
-nacimientos$Depnap[nacimientos$Depnap %in% "99"] <- "Ignorado"
-nacimientos$Depnap[nacimientos$Depnap %in% "23"] <- "Extranjero"
-nacimientos$Mupnap[nacimientos$Mupnap %in% "9999"] <- "Ignorado"
+#Variables cuantitativas de nacimientos
+summary(nacimientos$Libras[nacimientos$Libras != 99])
+qqnorm(nacimientos$Libras[nacimientos$Libras != 99], pch = 19, col = "gray50")
+qqline(nacimientos$Libras[nacimientos$Libras != 99])
+lillie.test(nacimientos$Libras[nacimientos$Libras != 99])
 
-nacimientos$Edadm[nacimientos$Edadm %in% "999"] <- "Ignorado"
-nacimientos$Deprem[nacimientos$Deprem %in% "99"] <- "Ignorado"
-nacimientos$Deprem[nacimientos$Deprem %in% "23"] <- "Extranjero"
-nacimientos$Muprem[nacimientos$Muprem %in% "9999"] <- "Ignorado"
-nacimientos$Muprem[nacimientos$Muprem %in% "2300"] <- "Extranjero"
-nacimientos$grupetma[nacimientos$grupetma %in% "9"] <- "Ignorado"
-nacimientos$Escivm[nacimientos$Escivm %in% "9"] <- "Ignorado"
-nacimientos$Escivm[nacimientos$Escivm %in% "1"] <- "Soltero"
-nacimientos$Escivm[nacimientos$Escivm %in% "2"] <- "Casado"
-nacimientos$Escivm[nacimientos$Escivm %in% "3"] <- "Unido"
-nacimientos$Depnam[nacimientos$Depnam %in% "99"] <- "Ignorado"
-nacimientos$Depnam[nacimientos$Depnam %in% "23"] <- "Extranjero"
-nacimientos$Mupnam[nacimientos$Mupnam %in% "9999"] <- "Ignorado"
+summary(nacimientos$Onzas[nacimientos$Onzas != 99])
+qqnorm(nacimientos$Onzas[nacimientos$Onzas != 99], pch = 19, col = "gray50")
+qqline(nacimientos$Onzas[nacimientos$Onzas != 99])
+lillie.test(nacimientos$Onzas[nacimientos$Onzas != 99])
 
-nacimientos$Asisrec[nacimientos$Asisrec %in% "9"] <- "Ignorado"
-nacimientos$Sitioocu[nacimientos$Sitioocu %in% "9"] <- "Ignorado"
-nacimientos$Tohite[nacimientos$Tohite %in% "99"] <- "Ignorado"
-nacimientos$Tohinm[nacimientos$Tohinm %in% "99"] <- "Ignorado"
-nacimientos$Tohivi[nacimientos$Tohivi %in% "99"] <- "Ignorado"
+table(nacimientos$Edadp)
+barplot(table(nacimientos$Edadp), main="Frecuencia edad del Padre")
+summary(nacimientos$Edadp[nacimientos$Edadp != 999])
+qqnorm(nacimientos$Edadp[nacimientos$Edadp != 999], pch = 19, col = "gray50")
+qqline(nacimientos$Edadp[nacimientos$Edadp != 999])
+lillie.test(nacimientos$Edadp[nacimientos$Edadp != 999])
+
+table(nacimientos$Edadm)
+barplot(table(nacimientos$Edadm), main="Frecuencia edad de la Madre")
+summary(nacimientos$Edadm[nacimientos$Edadm != 999])
+qqnorm(nacimientos$Edadm[nacimientos$Edadm != 999], pch = 19, col = "gray50")
+qqline(nacimientos$Edadm[nacimientos$Edadm != 999])
+lillie.test(nacimientos$Edadm[nacimientos$Edadm != 999])
+
+table(nacimientos$Tohite)
+barplot(table(nacimientos$Tohite), main="Total de hijos tenidos")
+summary(nacimientos$Tohite[nacimientos$Tohite != 99])
+lillie.test(nacimientos$Tohite[nacimientos$Tohite != 99])
+
+table(nacimientos$Tohinm)
+barplot(table(nacimientos$Tohinm), main="Total de hijos nacidos muertos")
+summary(nacimientos$Tohinm[nacimientos$Tohinm != 99])
+lillie.test(nacimientos$Tohinm[nacimientos$Tohinm != 99])
+
+table(nacimientos$Tohivi)
+barplot(table(nacimientos$Tohivi), main="Total de hijos vivos")
+summary(nacimientos$Tohivi[nacimientos$Tohivi != 99])
+lillie.test(nacimientos$Tohivi[nacimientos$Tohivi != 99])
+
+#Variables cualitativas de nacimientos
+barplot(table(nacimientos$Añoreg), ylim=c(0,400000), col="blue")
+barplot(table(nacimientos$Depocu),  ylim=c(0,800000),col="skyblue", main = "Departamento de ocurrencia")
+barplot(table(nacimientos$Mesocu),ylim=c(0,400000), col="yellow", main="Mes de ocurrencia")
+barplot(table(nacimientos$Sexo), ylim=c(0,2500000), col="red", main="Sexo del recien nacido", names=c("Masculino", "Feminino"))
+barplot(table(nacimientos$Tipar), main="Tipo de parto", names=c("Simple", "Doble", "Triple", "Multiple"), col="pink")
+barplot(table(nacimientos$Gretnp), ylim=c(0,1200000), col="purple", main="Grupo etnico del padre")
+barplot(table(nacimientos$grupetma), ylim=c(0,1500000), col="green", main="Grupo etnico de la madre")
+barplot(table(nacimientos$Escivp), ylim=c(0,2000000),col="chartreuse", main="Estado civil del padre", names=c("Casado", "Soltero", "Unido", "Ignorado"))
+barplot(table(nacimientos$Escivm), ylim=c(0,2500000),col="brown", main="Estado civil de la madre", names=c("Casada", "Soltera", "Unida", "Ignorado"))
+barplot(table(nacimientos$Escolap), ylim=c(0,1700000), col="darkgoldenrod", main="Escolaridad del padre")
+barplot(table(nacimientos$Escolam), ylim=c(0,1700000), col="darkolivegreen", main="Escolaridad de la madre")
+barplot(table(nacimientos$Asisrec), ylim=c(0,3000000), col="darkorange4", main="Asistencia medica recibida")
+barplot(table(nacimientos$Sitioocu), ylim=c(0,2000000), col="goldenrod", main="Sitio de ocurrencia")
+
+#Cruce de variables de Nacimientos
+edades<-data.frame(cbind(nacimientos$Edadp, nacimientos$Edadm))
+row_sub = apply(edades, 1, function(row) all(row !=999 ))
+edades<-edades[row_sub,]
+plot(edades$X1, edades$X2, main="Correlacion Edad del padre vs Edad de la madre", xlab = "Edad del padre", ylab = "Edad de la madre")
+cor(edades$X1, edades$X2)
+
+mediaLibrasDepa<-nacimientos%>%group_by(Depocu)%>% summarise(Mean=mean(Libras[Libras != 99]), Max=max(Libras[Libras != 99]), Min=min(Libras[Libras != 99]), Median=median(Libras[Libras != 99]), Std=sd(Libras[Libras != 99]))
+plot(mediaLibrasDepa$Depocu, mediaLibrasDepa$Mean, type = "h", lwd=10, col="lightpink4", main = "Media de peso por departamento", xlab = "Departamento", ylab = "Media de peso")
+
+mediaNaciDepa<-nacimientos%>%group_by(Depocu)%>% summarise(Mean=mean(Tohite[Tohite != 99]),Max=max(Tohite[Tohite != 99]), Min=min(Tohite[Tohite != 99]))
+plot(mediaNaciDepa$Depocu, mediaNaciDepa$Mean, type = "h", lwd=10, col="lightslateblue", main = "Media de hijos tenido por departamento", xlab = "Departamento", ylab = "Media de hijos tenidos", ylim = c(0,4) )
+
+mediaEdadEscop<-nacimientos%>%group_by(Escolap)%>% summarise(Mean=mean(Edadp[Edadp != 999]))
+plot(mediaEdadEscop$Escolap, mediaEdadEscop$Mean, type = "h", lwd=10, col="orange", main = "Media de edad por escolaridad del Padre", xlab = "Escolaridad del padre", ylab = "Edad media del padre", ylim = c(0,50))
+
+mediaEdadEscom<-nacimientos%>%group_by(Escolam)%>% summarise(Mean=mean(Edadm[Edadm != 999]))
+plot(mediaEdadEscom$Escolam, mediaEdadEscom$Mean, type = "h", lwd=10, col="seagreen", main = "Media de edad por escolaridad de la Madre", xlab = "Escolaridad de la madre", ylab = "Edad media de la madre", ylim = c(0,50))
+
+mediaHijoEscop<-nacimientos%>%group_by(Escolap)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEscop$Escolap, mediaHijoEscop$Mean, type = "h", lwd=10, col="slateblue4", main = "Media de hijos tenidos por escolaridad del padre", xlab = "Escolaridad del padre", ylab = "Media de hijos tenidos", ylim = c(0,4))
+
+mediaHijoEscom<-nacimientos%>%group_by(Escolam)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEscom$Escolam, mediaHijoEscom$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad de la madre", xlab = "Escolaridad de la madre", ylab = "Media de hijos tenidos", ylim = c(0,4))
+
+#Clustering
