@@ -2,6 +2,9 @@ library(haven)
 library(ggplot2)
 library(dplyr)
 library(nortest)
+library(cluster)
+library(fpc)
+library(e1071)
 
 setwd("C:/Users/Zephyrus/Documents/U/7mo Semestre/Mineria de Datos/Proyecto1-Mineria-de-Datos")
 
@@ -285,4 +288,77 @@ plot(mediaHijoEscop$Escolap, mediaHijoEscop$Mean, type = "h", lwd=10, col="slate
 mediaHijoEscom<-nacimientos%>%group_by(Escolam)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
 plot(mediaHijoEscom$Escolam, mediaHijoEscom$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad de la madre", xlab = "Escolaridad de la madre", ylab = "Media de hijos tenidos", ylim = c(0,4))
 
-#Clustering
+#Clustering se realiza con aquellos de caracter cuantitativo
+#Determinando el numero de clusters adecuados
+cuantidata<-cbind(nacimientos$Libras, nacimientos$Onzas, nacimientos$Edadm, nacimientos$Edadp, nacimientos$Tohinm, nacimientos$Tohite, nacimientos$Tohivi)
+
+wss <- (nrow(cuantidata-1)*sum(apply(cuantidata,2,var)))
+for (i in 2:10) 
+  wss[i] <- sum(kmeans(cuantidata, centers=i)$withinss)
+plot(1:10, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
+
+#Se utiliza cmeans y se determina si es un buen agrupamiento con el metodo de la silueta. Esto se hace con un grupo muestral ya que el tamanio del dataset origianal es muy grande
+means<-data.frame()
+for (i in 1:100){
+  a<-((20000*(i-1))+1)
+  b<-(i*20000)
+  fcm<-cmeans(cuantidata[a:b,],2)
+  silfcm<-silhouette(fcm$cluster,dist(cuantidata[a:b,]))
+  actualmean<-mean(silfcm[,3])
+  means<-rbind(means, data.frame(actualmean))}
+
+mean(means$actualmean)
+
+fcm<-cmeans(cuantidata,2)
+nacimientos$FCGrupos<-fcm$cluster
+#plotcluster(cuantidata,fcm$cluster)
+
+g1<-nacimientos[nacimientos$FCGrupos==1,]
+g2notfinish<-nacimientos[nacimientos$FCGrupos==2,]
+
+cuantidata2<-cbind(g2notfinish$Libras, g2notfinish$Onzas, g2notfinish$Edadm, g2notfinish$Edadp, g2notfinish$Tohinm, g2notfinish$Tohite, g2notfinish$Tohivi)
+wss2 <- (nrow(cuantidata2-1)*sum(apply(cuantidata2,2,var)))
+for (i in 2:10) 
+  wss2[i] <- sum(kmeans(cuantidata2, centers=i)$withinss)
+plot(1:10, wss2, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
+
+#Segundo metodo de la silueta
+means2<-data.frame()
+for (i in 1:100){
+  a<-((20000*(i-1))+1)
+  b<-(i*20000)
+  fcm<-cmeans(cuantidata2[a:b,],2)
+  silfcm<-silhouette(fcm$cluster,dist(cuantidata2[a:b,]))
+  actualmean<-mean(silfcm[,3])
+  means2<-rbind(means2, data.frame(actualmean))}
+
+mean(means2$actualmean)
+
+fcm2<-cmeans(cuantidata2,2)
+g2notfinish$FCGrupos2<-fcm2$cluster
+plotcluster(cuantidata2,fcm2$cluster)
+
+g2<-g2notfinish[g2notfinish$FCGrupos2==1,]
+g3<-g2notfinish[g2notfinish$FCGrupos2==2,]
+
+nrow(g1)
+nrow(g2)
+nrow(g3)
+
+#Analisis grupo 1
+table(g1$Edadp)
+barplot(table(g1$Edadm), main = "Edades de la madre del Grupo 1")
+barplot(table(g1$Escivp), main = "Estado civil del padre")
+barplot(table(g1$Escolap), main = "Escolaridad del padre")
+barplot(table(g1$Gretnp), main = "Grupo etnico del padre")
+barplot(table(g1$Deprep), main = "Departamento de residencia del padre")
+
+barplot(table(g1$Escivm), main = "Estado civil de la madre")
+barplot(table(g1$Escolam), main = "Escolaridad de la madre")
+barplot(table(g1$grupetma), main = "Grupo etnico de la madre")
+
+mediaHijoEtnm1<-g1%>%group_by(grupetma)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEtnm1$grupetma, mediaHijoEtnm1$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por etnia de la madre en el grupo 1", xlab = "Grupo etnico de la madre", ylab = "Media de hijos tenidos", ylim=c(0,4))
+
+mediaHijoEscom1<-g1%>%group_by(Escolam)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEscom1$Escolam, mediaHijoEscom1$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad de la madre en el grupo 1", xlab = "Escolaridad de la madre", ylab = "Media de hijos tenidos", ylim = c(0,4))
