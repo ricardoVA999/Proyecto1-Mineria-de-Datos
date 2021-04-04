@@ -256,8 +256,8 @@ barplot(table(nacimientos$Sexo), ylim=c(0,2500000), col="red", main="Sexo del re
 barplot(table(nacimientos$Tipar), main="Tipo de parto", names=c("Simple", "Doble", "Triple", "Multiple"), col="pink")
 barplot(table(nacimientos$Gretnp), ylim=c(0,1200000), col="purple", main="Grupo etnico del padre")
 barplot(table(nacimientos$grupetma), ylim=c(0,1500000), col="green", main="Grupo etnico de la madre")
-barplot(table(nacimientos$Escivp), ylim=c(0,2000000),col="chartreuse", main="Estado civil del padre", names=c("Casado", "Soltero", "Unido", "Ignorado"))
-barplot(table(nacimientos$Escivm), ylim=c(0,2500000),col="brown", main="Estado civil de la madre", names=c("Casada", "Soltera", "Unida", "Ignorado"))
+barplot(table(nacimientos$Escivp), ylim=c(0,2000000),col="chartreuse", main="Estado civil del padre", names=c("Soltero", "Casado", "Unido", "Ignorado"))
+barplot(table(nacimientos$Escivm), ylim=c(0,2500000),col="brown", main="Estado civil de la madre", names=c("Soltera", "Casada", "Unida", "Ignorado"))
 barplot(table(nacimientos$Escolap), ylim=c(0,1700000), col="darkgoldenrod", main="Escolaridad del padre")
 barplot(table(nacimientos$Escolam), ylim=c(0,1700000), col="darkolivegreen", main="Escolaridad de la madre")
 barplot(table(nacimientos$Asisrec), ylim=c(0,3000000), col="darkorange4", main="Asistencia medica recibida")
@@ -317,6 +317,7 @@ g1<-nacimientos[nacimientos$FCGrupos==1,]
 g2notfinish<-nacimientos[nacimientos$FCGrupos==2,]
 
 cuantidata2<-cbind(g2notfinish$Libras, g2notfinish$Onzas, g2notfinish$Edadm, g2notfinish$Edadp, g2notfinish$Tohinm, g2notfinish$Tohite, g2notfinish$Tohivi)
+
 wss2 <- (nrow(cuantidata2-1)*sum(apply(cuantidata2,2,var)))
 for (i in 2:10) 
   wss2[i] <- sum(kmeans(cuantidata2, centers=i)$withinss)
@@ -336,7 +337,7 @@ mean(means2$actualmean)
 
 fcm2<-cmeans(cuantidata2,2)
 g2notfinish$FCGrupos2<-fcm2$cluster
-plotcluster(cuantidata2,fcm2$cluster)
+#plotcluster(cuantidata2,fcm2$cluster)
 
 g2<-g2notfinish[g2notfinish$FCGrupos2==1,]
 g3<-g2notfinish[g2notfinish$FCGrupos2==2,]
@@ -362,3 +363,70 @@ plot(mediaHijoEtnm1$grupetma, mediaHijoEtnm1$Mean, type = "h", lwd=10, col="yell
 
 mediaHijoEscom1<-g1%>%group_by(Escolam)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
 plot(mediaHijoEscom1$Escolam, mediaHijoEscom1$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad de la madre en el grupo 1", xlab = "Escolaridad de la madre", ylab = "Media de hijos tenidos", ylim = c(0,4))
+
+#Analisis grupo 2
+summary(g2$Edadp)
+summary(g2$Edadm)
+plot(g2$Edadm, g2$Edadp, main = "Correlaccion edad padre  y madre en el grupo 2", ylab = "Edad padre", xlab = "Edad madre")
+summary(g2$Tohite[g2$Tohite != 99])
+barplot(table(g2$Tohite), main="Total de hijos tenidos grupo 2")
+
+barplot(table(g2$Escolap), main="Escolaridad del padre grupo 2")
+barplot(table(g2$Escolam), main="Escolaridad de la madre grupo 2")
+
+barplot(table(g2$Escivp), main = "Estado civil del padre grupo 2", names=c("Soltero", "Casado", "Unido", "Ignorado"))
+barplot(table(g2$Escivm), main = "Estado civil de la madre grupo 2", names=c("Soltera", "Casada", "Unida", "Ignorado"))
+
+barplot(table(g2$grupetma), main = "Grupo etnico de la madre grupo 2")
+barplot(table(g2$Gretnp), main = "Grupo etnico del padre grupo 2")
+
+mediaHijoEtnm2<-g2%>%group_by(grupetma)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEtnm2$grupetma, mediaHijoEtnm2$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por etnia de la madre en el grupo 2", xlab = "Grupo etnico de la madre", ylab = "Media de hijos tenidos", ylim=c(0,3))
+mediaHijoEtnp2<-g2%>%group_by(Gretnp)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEtnp2$Gretnp, mediaHijoEtnp2$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por etnia del padre en el grupo 2", xlab = "Grupo etnico del padre", ylab = "Media de hijos tenidos", ylim=c(0,3))
+
+mediaHijoEscom2<-g2%>%group_by(Escolam)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEscom2$Escolam, mediaHijoEscom2$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad de la madre en el grupo 2", xlab = "escolaridad de la madre", ylab = "Media de hijos tenidos", ylim=c(0,3))
+mediaHijoEscop2<-g2%>%group_by(Escolap)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEscop2$Escolap, mediaHijoEscop2$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad del padre en el grupo 2", xlab = "escolaridad del padre", ylab = "Media de hijos tenidos", ylim=c(0,3))
+
+mediaEdadEscom2<-g2%>%group_by(Escolam)%>% summarise(Mean=mean(Edadm[Edadm != 999]))
+plot(mediaEdadEscom2$Escolam, mediaEdadEscom2$Mean, type = "h", lwd=10, col="yellow4", main = "Media de edad por escolaridad de la madre en el grupo 2", xlab = "escolaridad de la madre", ylab = "Media de edad", ylim=c(0,30))
+mediaEdadEscop2<-g2%>%group_by(Escolap)%>% summarise(Mean=mean(Edadp[Edadp != 999]))
+plot(mediaEdadEscop2$Escolap, mediaEdadEscop2$Mean, type = "h", lwd=10, col="yellow4", main = "Media de edad por escolaridad del padre en el grupo 2", xlab = "escolaridad del padre", ylab = "Media de edad", ylim=c(0,35))
+
+#Analisis grupo 3
+summary(g3$Edadp)
+summary(g3$Edadm[g3$Edadm != 999])
+
+edades<-data.frame(cbind(g3$Edadp, g3$Edadm))
+row_sub = apply(edades, 1, function(row) all(row !=999 ))
+edades<-edades[row_sub,]
+plot(edades$X2, edades$X1, main="Correlacion Edad padre y madre en el grupo 3", xlab = "Edad de la madre", ylab = "Edad del padre")
+
+summary(g3$Tohite[g3$Tohite != 99])
+barplot(table(g3$Tohite), main="Total de hijos tenidos grupo 3")
+
+barplot(table(g3$Escolap), main="Escolaridad del padre grupo 3")
+barplot(table(g3$Escolam), main="Escolaridad de la madre grupo 3")
+
+barplot(table(g3$Escivp), main = "Estado civil del padre grupo 3", names=c("Soltero", "Casado", "Unido", "Ignorado"))
+barplot(table(g3$Escivm), main = "Estado civil de la madre grupo 3", names=c("Soltera", "Casada", "Unida", "Ignorado"))
+
+barplot(table(g3$grupetma), main = "Grupo etnico de la madre grupo 3")
+barplot(table(g3$Gretnp), main = "Grupo etnico del padre grupo 3")
+
+mediaHijoEtnm3<-g3%>%group_by(grupetma)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEtnm3$grupetma, mediaHijoEtnm3$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por etnia de la madre en el grupo 3", xlab = "Grupo etnico de la madre", ylab = "Media de hijos tenidos", ylim=c(0,7))
+mediaHijoEtnp3<-g3%>%group_by(Gretnp)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEtnp3$Gretnp, mediaHijoEtnp3$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por etnia del padre en el grupo 3", xlab = "Grupo etnico del padre", ylab = "Media de hijos tenidos", ylim=c(0,7))
+
+mediaHijoEscom3<-g3%>%group_by(Escolam)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEscom3$Escolam, mediaHijoEscom3$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad de la madre en el grupo 3", xlab = "escolaridad de la madre", ylab = "Media de hijos tenidos", ylim=c(0,7))
+mediaHijoEscop3<-g3%>%group_by(Escolap)%>% summarise(Mean=mean(Tohite[Tohite != 99]))
+plot(mediaHijoEscop3$Escolap, mediaHijoEscop3$Mean, type = "h", lwd=10, col="yellow4", main = "Media de hijos tenidos por escolaridad del padre en el grupo 3", xlab = "escolaridad del padre", ylab = "Media de hijos tenidos", ylim=c(0,7))
+
+mediaEdadEscom3<-g3%>%group_by(Escolam)%>% summarise(Mean=mean(Edadm[Edadm != 999]))
+plot(mediaEdadEscom3$Escolam, mediaEdadEscom3$Mean, type = "h", lwd=10, col="yellow4", main = "Media de edad por escolaridad de la madre en el grupo 3", xlab = "escolaridad de la madre", ylab = "Media de edad", ylim=c(0,40))
+mediaEdadEscop3<-g3%>%group_by(Escolap)%>% summarise(Mean=mean(Edadp[Edadp != 999]))
+plot(mediaEdadEscop3$Escolap, mediaEdadEscop3$Mean, type = "h", lwd=10, col="yellow4", main = "Media de edad por escolaridad del padre en el grupo 3", xlab = "escolaridad del padre", ylab = "Media de edad", ylim=c(0,45))
