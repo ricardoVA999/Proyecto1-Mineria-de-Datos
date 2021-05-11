@@ -7,8 +7,6 @@ library(fpc)
 library(e1071)
 library(rpart)
 
-setwd("C:/Users/Zephyrus/Documents/U/7mo Semestre/Mineria de Datos/Proyecto1-Mineria-de-Datos")
-
 #Procecamiento de datos para los datos de Nacimientos
 nac2009 = read_sav("./BasesDeDatos/nacimientos2009.sav")
 names(nac2009)[names(nac2009) == "Gretnm"] <- "grupetma"
