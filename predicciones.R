@@ -6,6 +6,8 @@ library(cluster)
 library(fpc)
 library(e1071)
 library(rpart)
+library(rpart.plot)
+library(caret)
 
 #Procecamiento de datos para los datos de Nacimientos
 nac2009 = read_sav("./BasesDeDatos/nacimientos2009.sav")
@@ -212,37 +214,43 @@ nacimientos$Escolap[nacimientos$Escolap %in% "2"] <- "Primaria"
 nacimientos$Escolap[nacimientos$Escolap %in% "3"] <- "Basica"
 nacimientos$Escolap[nacimientos$Escolap %in% "4"] <- "Diversificado"
 nacimientos$Escolap[nacimientos$Escolap %in% "5"] <- "Universitario"
-nacimientos$Escolap[nacimientos$Escolap %in% "6"] <- "Postgrado"
-nacimientos$Escolap[nacimientos$Escolap %in% "7"] <- "Doctorado"
+nacimientos$Escolap[nacimientos$Escolap %in% "6"] <- "Universitario"
+nacimientos$Escolap[nacimientos$Escolap %in% "7"] <- "Universitario"
 
-nacimientos$Escolam[nacimientos$Escolam %in% "1"] <- "NoEdu"
-nacimientos$Escolam[nacimientos$Escolam %in% "2"] <- "Primaria"
-nacimientos$Escolam[nacimientos$Escolam %in% "3"] <- "Basica"
-nacimientos$Escolam[nacimientos$Escolam %in% "4"] <- "Diversificado"
-nacimientos$Escolam[nacimientos$Escolam %in% "5"] <- "Universitario"
-nacimientos$Escolam[nacimientos$Escolam %in% "6"] <- "Postgrado"
-nacimientos$Escolam[nacimientos$Escolam %in% "7"] <- "Doctorado"
-
+#Evitando overfitting
 nacimientos$Mesreg<-NULL
 nacimientos$Depreg<-NULL
 nacimientos$mupreg<-NULL
 nacimientos$Onzas<-NULL
-nacimientos$Depnap<-NULL
-nacimientos$Depnam<-NULL
-nacimientos$Mupnap<-NULL
-nacimientos$Mupnam<-NULL
 nacimientos$Mupocu<-NULL
 nacimientos$muprep<-NULL
 nacimientos$Muprem<-NULL
+nacimientos$Mupnap<-NULL
+nacimientos$Mupnam<-NULL
+nacimientos$Escolam<-NULL
+nacimientos$Añoreg<-NULL
 
 #Predicciones padre
 nacDatP<-nacimientos[!(nacimientos$Escolap==9),]
+
 nacDatP$Escolap <- as.factor(nacDatP$Escolap)
+nacDatP$Asisrec <- as.factor(nacDatP$Asisrec)
+nacDatP$Sitioocu <- as.factor(nacDatP$Sitioocu)
+nacDatP$Depocu <- as.factor(nacDatP$Depocu)
+nacDatP$Sexo <- as.factor(nacDatP$Sexo)
+nacDatP$Tipar <- as.factor(nacDatP$Tipar)
+nacDatP$Gretnp <- as.factor(nacDatP$Gretnp)
+nacDatP$Escivm <- as.factor(nacDatP$Escivm)
+nacDatP$Escivp <- as.factor(nacDatP$Escivp)
+nacDatP$Depnam <- as.factor(nacDatP$Depnam)
+nacDatP$Depnap <- as.factor(nacDatP$Depnap)
+
+
+
 table(nacDatP$Escolap)
 nrow(nacDatP)
 ncol(nacDatP)
 
-porciento <- 60/100
 set.seed(1234)
 
 noEDPa<-nacDatP[nacDatP$Escolap=="NoEdu",]
@@ -250,39 +258,45 @@ priPa<-nacDatP[nacDatP$Escolap=="Primaria",]
 basPa<-nacDatP[nacDatP$Escolap=="Basica",]
 divPa<-nacDatP[nacDatP$Escolap=="Diversificado",]
 uniPa<-nacDatP[nacDatP$Escolap=="Universitario",]
-postPa<-nacDatP[nacDatP$Escolap=="Postgrado",]
-docPa<-nacDatP[nacDatP$Escolap=="Doctorado",]
 
-numFilasTrainNoEdPa<-sample(nrow(noEDPa), porciento*nrow(noEDPa))
+numFilasTrainNoEdPa<-sample(nrow(noEDPa), 0.6*nrow(noEDPa))#6
 trainNoEdPa<-noEDPa[numFilasTrainNoEdPa,]
-testNoEdPa<- noEDPa[-numFilasTrainNoEdPa,]
 
-numFilasTrainPriPa<-sample(nrow(priPa), porciento*nrow(priPa))
+numFilasTrainPriPa<-sample(nrow(priPa), 0.35*nrow(priPa))#35
 trainPriPa<-priPa[numFilasTrainPriPa,]
-testPriPa<- priPa[-numFilasTrainPriPa,]
 
-numFilasTrainBasPa<-sample(nrow(basPa), porciento*nrow(basPa))
+numFilasTrainBasPa<-sample(nrow(basPa), 0.8*nrow(basPa))#8
 trainBasPa<-basPa[numFilasTrainBasPa,]
-testBasPa<- basPa[-numFilasTrainBasPa,]
 
-numFilasTrainDivPa<-sample(nrow(divPa), porciento*nrow(divPa))
+numFilasTrainDivPa<-sample(nrow(divPa), 0.8*nrow(divPa))#8
 trainDivPa<-divPa[numFilasTrainDivPa,]
-testDivPa<- divPa[-numFilasTrainDivPa,]
 
-numFilasTrainUniPa<-sample(nrow(uniPa), porciento*nrow(uniPa))
+numFilasTrainUniPa<-sample(nrow(uniPa), 0.7*nrow(uniPa))#7
 trainUniPa<-uniPa[numFilasTrainUniPa,]
-testUniPa<- uniPa[-numFilasTrainUniPa,]
+trainUniPa<-rbind(trainUniPa, trainUniPa[rep(1:60000, 3), ])
 
-numFilasTrainPostPa<-sample(nrow(postPa), porciento*nrow(postPa))
-trainPostPa<-postPa[numFilasTrainPostPa,]
-testPostPa<- postPa[-numFilasTrainPostPa,]
 
-numFilasTrainDocPa<-sample(nrow(docPa), porciento*nrow(docPa))
-trainDocPa<-docPa[numFilasTrainDocPa,]
-testDocPa<- docPa[-numFilasTrainDocPa,]
 
-training<-rbind(trainNoEdPa, trainPriPa, trainBasPa, trainDivPa, trainUniPa, trainPostPa, trainDocPa)
-test<-rbind(testNoEdPa, testPriPa, testBasPa, testDivPa, testUniPa, testPostPa, testDocPa)
+
+testNoEdPa<-noEDPa[-numFilasTrainNoEdPa,]
+numFilasTrainNoEdPa<-sample(nrow(testNoEdPa), 0.6*nrow(testNoEdPa))
+testPriPa<-testNoEdPa[numFilasTrainNoEdPa,]
+
+testPriPa<-priPa[-numFilasTrainPriPa,]
+numFilasTrainPriPa<-sample(nrow(testPriPa), 0.15*nrow(testPriPa))
+testPriPa<-testPriPa[numFilasTrainPriPa,]
+
+testBasPa<-basPa[-numFilasTrainBasPa,]
+
+testDivPa<-divPa[-numFilasTrainDivPa,]
+
+testUniPa<-uniPa[-numFilasTrainUniPa,]
+
+
+
+
+training<-rbind(trainNoEdPa, trainPriPa, trainBasPa, trainDivPa, trainUniPa)
+test<-rbind(testNoEdPa, testPriPa, testBasPa, testDivPa, testUniPa)
 
 table(training$Escolap)
 table(test$Escolap)
@@ -291,6 +305,17 @@ table(nacDatP$Escolap)
 
 #Arbol de Clasificacion Prediccion Educacion del padre
 
-#arbolModelo<-rpart(Escolap~.,training,method = "class")
-#rpart.plot(arbolModelo)
+arbolModelo<-rpart(Escolap~.,training,method = "class")
+rpart.plot(arbolModelo)
 
+prediccion <- predict(arbolModelo, newdata = test[1:21])
+columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+test$prediccion<-columnaMasAlta
+
+test$prediccion <- as.factor(test$prediccion)
+levels(test$prediccion) <- levels(test$Escolap)
+cfm <- confusionMatrix(test$prediccion, test$Escolap)
+
+cfm
+
+#Bayes Ingenuo Prediccion Educacion del padre
