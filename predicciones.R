@@ -10,6 +10,7 @@ library(rpart.plot)
 library(caret)
 
 
+setwd("C:/Users/Zephyrus/Documents/U/7mo Semestre/Mineria de Datos/Proyecto1-Mineria-de-Datos")
 
 #Procecamiento de datos para los datos de Nacimientos
 nac2009 = read_sav("./BasesDeDatos/nacimientos2009.sav")
@@ -264,7 +265,7 @@ nacimientos$Tohinm<-NULL
 nacimientos$Tohivi<-NULL
 #nacimientos$Tohite
 
-#Predicciones padre
+#Predicciones educacion padre
 
 nacDatP<-nacimientos[!(nacimientos$Escolap==9),]
 
@@ -302,13 +303,13 @@ uniPa<-nacDatP[nacDatP$Escolap=="Universitario",]
 numFilasTrainNoEdPa<-sample(nrow(noEDPa), 0.6*nrow(noEDPa))#6
 trainNoEdPa<-noEDPa[numFilasTrainNoEdPa,]
 
-numFilasTrainPriPa<-sample(nrow(priPa), 0.29*nrow(priPa))#35
+numFilasTrainPriPa<-sample(nrow(priPa), 0.29*nrow(priPa))#29
 trainPriPa<-priPa[numFilasTrainPriPa,]
 
 numFilasTrainBasPa<-sample(nrow(basPa), 0.8*nrow(basPa))#8
 trainBasPa<-basPa[numFilasTrainBasPa,]
 
-numFilasTrainDivPa<-sample(nrow(divPa), 0.7*nrow(divPa))#8
+numFilasTrainDivPa<-sample(nrow(divPa), 0.7*nrow(divPa))#7
 trainDivPa<-divPa[numFilasTrainDivPa,]
 
 numFilasTrainUniPa<-sample(nrow(uniPa), 0.7*nrow(uniPa))#7
@@ -376,4 +377,120 @@ test$prediccion <- predTest
 test$prediccion <- as.factor(test$prediccion)
 levels(test$prediccion) <- levels(test$Escolap)
 cfm <- confusionMatrix(test$prediccion, test$Escolap)
+cfm
+
+#Correr hasta antes de las predicciones del padre, luego esto
+#Predicciones educacion de la madre
+nacDatM<-nacimientos[!(nacimientos$Escolam==9),]
+nacDatM$Escolam[nacDatM$Escolam %in% "1"] <- "NoEdu"
+nacDatM$Escolam[nacDatM$Escolam %in% "2"] <- "Primaria"
+nacDatM$Escolam[nacDatM$Escolam %in% "3"] <- "Basica"
+nacDatM$Escolam[nacDatM$Escolam %in% "4"] <- "Diversificado"
+nacDatM$Escolam[nacDatM$Escolam %in% "5"] <- "Universitario"
+nacDatM$Escolam[nacDatM$Escolam %in% "6"] <- "Universitario"
+nacDatM$Escolam[nacDatM$Escolam %in% "7"] <- "Universitario"
+
+nacDatM$Escolap<-NULL
+nacDatM$Edadp<-NULL
+nacDatM$Deprep<-NULL
+nacDatM$Gretnp<-NULL
+nacDatM$Escivp<-NULL
+nacDatM$Depnap<-NULL
+
+nacDatM$Escolam <- as.factor(nacDatM$Escolam)
+nacDatM$Depocu <- as.factor(nacDatM$Depocu)
+nacDatM$Sexo <- as.factor(nacDatM$Sexo)
+nacDatM$Tipar <- as.factor(nacDatM$Tipar)
+nacDatM$Deprem <- as.factor(nacDatM$Deprem)
+nacDatM$grupetma <- as.factor(nacDatM$grupetma)
+nacDatM$Escivm <- as.factor(nacDatM$Escivm)
+nacDatM$Asisrec <- as.factor(nacDatM$Asisrec)
+nacDatM$Sitioocu <- as.factor(nacDatM$Sitioocu)
+
+
+table(nacDatM$Escolam)
+nrow(nacDatM)
+ncol(nacDatM)
+
+set.seed(1234)
+
+noEDMa<-nacDatM[nacDatM$Escolam=="NoEdu",]
+priMa<-nacDatM[nacDatM$Escolam=="Primaria",]
+basMa<-nacDatM[nacDatM$Escolam=="Basica",]
+divMa<-nacDatM[nacDatM$Escolam=="Diversificado",]
+uniMa<-nacDatM[nacDatM$Escolam=="Universitario",]
+
+numFilasTrainNoEdMa<-sample(nrow(noEDMa), 0.4*nrow(noEDMa))#6
+trainNoEdMa<-noEDMa[numFilasTrainNoEdMa,]
+
+numFilasTrainPriMa<-sample(nrow(priMa), 0.35*nrow(priMa))#29
+trainPriMa<-priMa[numFilasTrainPriMa,]
+
+numFilasTrainBasMa<-sample(nrow(basMa), 0.8*nrow(basMa))#8
+trainBasMa<-basMa[numFilasTrainBasMa,]
+
+numFilasTrainDivMa<-sample(nrow(divMa), 0.7*nrow(divMa))#8
+trainDivMa<-divMa[numFilasTrainDivMa,]
+
+numFilasTrainUniMa<-sample(nrow(uniMa), 0.7*nrow(uniMa))#7
+trainUniMa<-uniMa[numFilasTrainUniMa,]
+trainUniMa<-rbind(trainUniMa, trainUniMa[rep(1:40000, 3), ])
+
+
+testNoEdMa<-noEDMa[-numFilasTrainNoEdMa,]
+numFilasTrainNoEdMa<-sample(nrow(testNoEdMa), 0.6*nrow(testNoEdMa))
+testNoEdMa<-testNoEdMa[numFilasTrainNoEdMa,]
+
+testPriMa<-priMa[-numFilasTrainPriMa,]
+numFilasTrainPriMa<-sample(nrow(testPriMa), 0.15*nrow(testPriMa))
+testPriMa<-testPriMa[numFilasTrainPriMa,]
+
+testBasMa<-basMa[-numFilasTrainBasMa,]
+
+testDivMa<-divMa[-numFilasTrainDivMa,]
+
+testUniMa<-uniMa[-numFilasTrainUniMa,]
+
+
+
+
+trainingMa<-rbind(trainNoEdMa, trainPriMa, trainBasMa, trainDivMa, trainUniMa)
+testMa<-rbind(testNoEdMa, testPriMa, testBasMa, testDivMa, testUniMa)
+
+table(trainingMa$Escolam)
+table(testMa$Escolam)
+table(nacDatM$Escolam)
+
+#Arbol de clasificacion para la educacion de la madre
+arbolModeloMa<-rpart(Escolam~.,trainingMa,method = "class")
+rpart.plot(arbolModeloMa)
+
+prediccion <- predict(arbolModeloMa, newdata = testMa[1:14])
+columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+testMa$prediccion<-columnaMasAlta
+
+testMa$prediccion <- as.factor(testMa$prediccion)
+levels(testMa$prediccion) <- levels(testMa$Escolam)
+cfm <- confusionMatrix(testMa$prediccion, testMa$Escolam)
+
+cfm
+
+#Bayes Ingenuo Prediccion Educacion de la madre
+
+trainingMa$Diaocu <- as.factor(trainingMa$Diaocu)
+trainingMa$Mesocu <- as.factor(trainingMa$Mesocu)
+trainingMa$Depnam <- as.factor(trainingMa$Depnam)
+
+testMa$Diaocu <- as.factor(testMa$Diaocu)
+testMa$Mesocu <- as.factor(testMa$Mesocu)
+testMa$Depnam <- as.factor(testMa$Depnam)
+
+
+modelo<-naiveBayes(as.factor(Escolam)~., data=trainingMa)
+
+predTest<-predict(modelo, newdata = testMa[,1:14])
+testMa$prediccion <- predTest
+testMa$prediccion <- as.factor(testMa$prediccion)
+levels(testMa$prediccion) <- levels(testMa$Escolam)
+cfm <- confusionMatrix(testMa$prediccion, testMa$Escolam)
 cfm
