@@ -8,7 +8,9 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(caret)
+library(nnet)
 
+setwd("C:/Users/Zephyrus/Documents/U/7mo Semestre/Mineria de Datos/Proyecto1-Mineria-de-Datos")
 
 #Procecamiento de datos para los datos de Nacimientos
 nac2009 = read_sav("./BasesDeDatos/nacimientos2009.sav")
@@ -359,23 +361,51 @@ cfm
 
 #Bayes Ingenuo Prediccion Educacion del padre
 
-training$Diaocu <- as.factor(training$Diaocu)
-training$Mesocu <- as.factor(training$Mesocu)
-training$Depnap <- as.factor(training$Depnap)
+training$Diaocu <- NULL
+training$Mesocu <- NULL
+training$Sexo <- NULL
 
-test$Diaocu <- as.factor(test$Diaocu)
-test$Mesocu <- as.factor(test$Mesocu)
+test$Diaocu <- NULL
+test$Mesocu <- NULL
+test$Sexo <- NULL
+
+training$Depnap <- as.factor(training$Depnap)
 test$Depnap <- as.factor(test$Depnap)
 
 
 modelo<-naiveBayes(as.factor(Escolap)~., data=training)
 
-predTest<-predict(modelo, newdata = test[,1:14])
+predTest<-predict(modelo, newdata = test[,1:11])
 test$prediccion <- predTest
 test$prediccion <- as.factor(test$prediccion)
 levels(test$prediccion) <- levels(test$Escolap)
 cfm <- confusionMatrix(test$prediccion, test$Escolap)
 cfm
+
+#Red neuronal artificial machine educacion padres
+
+training$Diaocu <- NULL
+training$Mesocu <- NULL
+training$Sexo <- NULL
+
+test$Diaocu <- NULL
+test$Mesocu <- NULL
+test$Sexo <- NULL
+
+training$Depnap <- as.factor(training$Depnap)
+test$Depnap <- as.factor(test$Depnap)
+
+modelo.nn2 <- nnet(Escolap~.,data = training, size=10, rang=0.1, decay=5e-4, maxit=100)
+
+prediccion <- as.data.frame(predict(modelo.nn2, newdata = test[,1:11]))
+columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+test$prediccion<-columnaMasAlta
+
+test$prediccion <- as.factor(test$prediccion)
+levels(test$prediccion) <- levels(test$Escolap)
+cfm <- confusionMatrix(test$prediccion, test$Escolap)
+cfm
+
 
 #Correr hasta antes de las predicciones del padre, luego esto
 #Predicciones educacion de la madre
@@ -475,19 +505,45 @@ cfm
 
 #Bayes Ingenuo Prediccion Educacion de la madre
 
-trainingMa$Diaocu <- as.factor(trainingMa$Diaocu)
-trainingMa$Mesocu <- as.factor(trainingMa$Mesocu)
-trainingMa$Depnam <- as.factor(trainingMa$Depnam)
+trainingMa$Diaocu <- NULL
+trainingMa$Mesocu <- NULL
+trainingMa$Sexo <- NULL
 
-testMa$Diaocu <- as.factor(testMa$Diaocu)
-testMa$Mesocu <- as.factor(testMa$Mesocu)
+testMa$Diaocu <- NULL
+testMa$Mesocu <- NULL
+testMa$Sexo <- NULL
+
+trainingMa$Depnam <- as.factor(trainingMa$Depnam)
 testMa$Depnam <- as.factor(testMa$Depnam)
 
 
 modelo<-naiveBayes(as.factor(Escolam)~., data=trainingMa)
 
-predTest<-predict(modelo, newdata = testMa[,1:14])
+predTest<-predict(modelo, newdata = testMa[,1:11])
 testMa$prediccion <- predTest
+testMa$prediccion <- as.factor(testMa$prediccion)
+levels(testMa$prediccion) <- levels(testMa$Escolam)
+cfm <- confusionMatrix(testMa$prediccion, testMa$Escolam)
+cfm
+
+#Red neuronal artificial educacion de la madre
+trainingMa$Diaocu <- NULL
+trainingMa$Mesocu <- NULL
+trainingMa$Sexo <- NULL
+
+testMa$Diaocu <- NULL
+testMa$Mesocu <- NULL
+testMa$Sexo <- NULL
+
+trainingMa$Depnam <- as.factor(trainingMa$Depnam)
+testMa$Depnam <- as.factor(testMa$Depnam)
+
+modelo.nn2 <- nnet(Escolam~.,data = trainingMa, size=10, rang=0.1, decay=5e-4, maxit=100)
+
+prediccion <- as.data.frame(predict(modelo.nn2, newdata = testMa[,1:11]))
+columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+testMa$prediccion<-columnaMasAlta
+
 testMa$prediccion <- as.factor(testMa$prediccion)
 levels(testMa$prediccion) <- levels(testMa$Escolam)
 cfm <- confusionMatrix(testMa$prediccion, testMa$Escolam)
